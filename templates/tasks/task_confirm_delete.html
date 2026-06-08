@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Task | TaskFlow{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="form-shell danger-shell">
+        <p class="eyebrow">Delete task</p>
+        <h1>Remove "{{ object.title }}"?</h1>
+        <p class="muted">This action cannot be undone.</p>
+
+        <form method="post" class="button-row">
+            {% csrf_token %}
+            <a class="button secondary" href="{% url 'tasks:list' %}">Cancel</a>
+            <button class="button danger" type="submit">Delete</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

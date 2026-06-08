@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Edit{% else %}New{% endif %} Task | TaskFlow{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="form-shell">
+        <p class="eyebrow">{% if object %}Edit task{% else %}Create task{% endif %}</p>
+        <h1>{% if object %}Refine the plan{% else %}Capture a new priority{% endif %}</h1>
+
+        <form method="post" class="task-form" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field-group {% if field.field.widget.input_type == 'checkbox' %}checkbox-group{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small>{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <span class="field-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="button-row">
+                <a class="button secondary" href="{% url 'tasks:list' %}">Cancel</a>
+                <button class="button primary" type="submit">Save Task</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

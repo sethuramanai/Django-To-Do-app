@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Signup | TaskFlow{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-intro">
+            <p class="eyebrow">Start fresh</p>
+            <h1>Create your TaskFlow account.</h1>
+            <p>Sign up with your email address and password, then jump straight into your personal task dashboard.</p>
+        </div>
+
+        <form method="post" class="login-form" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-alert">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="field-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="field-group">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {% for error in form.password1.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="field-group">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {% for error in form.password2.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <button class="button primary" type="submit">Create Account</button>
+            <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </form>
+    </div>
+</section>
+{% endblock %}
