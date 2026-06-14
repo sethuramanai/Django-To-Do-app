@@ -15,6 +15,11 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+# Automatically allow the Railway-assigned public domain
+_railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN")
+if _railway_domain:
+    ALLOWED_HOSTS.append(_railway_domain)
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
