@@ -5,8 +5,14 @@ from .models import Task
 
 
 class TaskModelTests(TestCase):
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+        self.user = User.objects.create_user(username="testuser@example.com", password="TestPass123")
+
     def test_task_string_representation_uses_title(self):
-        task = Task.objects.create(title="Ship portfolio app")
+        task = Task.objects.create(title="Ship portfolio app", user=self.user)
 
         self.assertEqual(str(task), "Ship portfolio app")
 
@@ -18,9 +24,10 @@ class TaskViewTests(TestCase):
         User = get_user_model()
         User.objects.create_user(username="tester@example.com", password="Tester@12345")
         self.client.login(username="tester@example.com", password="Tester@12345")
+        self.user = User.objects.get(username="tester@example.com")
 
     def test_task_list_displays_tasks(self):
-        Task.objects.create(title="Write README", priority=Task.Priority.HIGH)
+        Task.objects.create(title="Write README", priority=Task.Priority.HIGH, user=self.user)
 
         response = self.client.get(reverse("tasks:list"))
 
@@ -34,10 +41,10 @@ class TaskViewTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("tasks:list"))
-        self.assertTrue(Task.objects.filter(title="Create demo").exists())
+        self.assertTrue(Task.objects.filter(title="Create demo", user=self.user).exists())
 
     def test_task_can_be_toggled(self):
-        task = Task.objects.create(title="Toggle me")
+        task = Task.objects.create(title="Toggle me", user=self.user)
 
         response = self.client.post(reverse("tasks:toggle", args=[task.pk]))
 
@@ -46,8 +53,8 @@ class TaskViewTests(TestCase):
         self.assertTrue(task.completed)
 
     def test_task_list_can_filter_active_tasks(self):
-        Task.objects.create(title="Active task")
-        Task.objects.create(title="Finished task", completed=True)
+        Task.objects.create(title="Active task", user=self.user)
+        Task.objects.create(title="Finished task", completed=True, user=self.user)
 
         response = self.client.get(reverse("tasks:list"), {"status": "active"})
 

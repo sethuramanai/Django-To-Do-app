@@ -30,7 +30,7 @@ class TaskListView(LoginRequiredMixin, ListView):
     context_object_name = "tasks"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(user=self.request.user)
         query = self.request.GET.get("q", "").strip()
         status = self.request.GET.get("status", "all")
         priority = self.request.GET.get("priority", "all")
@@ -50,12 +50,12 @@ class TaskListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        all_tasks = Task.objects.all()
+        user_tasks = Task.objects.filter(user=self.request.user)
         context.update(
             {
-                "total_count": all_tasks.count(),
-                "active_count": all_tasks.filter(completed=False).count(),
-                "completed_count": all_tasks.filter(completed=True).count(),
+                "total_count": user_tasks.count(),
+                "active_count": user_tasks.filter(completed=False).count(),
+                "completed_count": user_tasks.filter(completed=True).count(),
                 "current_query": self.request.GET.get("q", ""),
                 "current_status": self.request.GET.get("status", "all"),
                 "current_priority": self.request.GET.get("priority", "all"),
@@ -71,6 +71,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
     template_name = "tasks/task_form.html"
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, "Task created.")
         return super().form_valid(form)
 
@@ -79,6 +80,9 @@ class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = "tasks/task_form.html"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
 
     def form_valid(self, form):
         messages.success(self.request, "Task updated.")
@@ -90,6 +94,9 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "tasks/task_confirm_delete.html"
     success_url = reverse_lazy("tasks:list")
 
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
     def form_valid(self, form):
         messages.success(self.request, "Task deleted.")
         return super().form_valid(form)
@@ -98,7 +105,7 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
 @require_POST
 @login_required
 def toggle_task(request, pk):
-    task = get_object_or_404(Task, pk=pk)
+    task = get_object_or_404(Task, pk=pk, user=request.user)
     task.completed = not task.completed
     task.save(update_fields=["completed", "updated_at"])
     messages.success(request, "Task marked complete." if task.completed else "Task reopened.")

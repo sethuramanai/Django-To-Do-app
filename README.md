@@ -17,7 +17,7 @@ TaskFlow is a polished Django CRUD application built for a portfolio. It helps u
 
 - Python 3
 - Django 5
-- SQLite for local development
+- supabase for backend
 - WhiteNoise for static files
 - Gunicorn-ready deployment dependency
 

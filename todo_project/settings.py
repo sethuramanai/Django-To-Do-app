@@ -3,9 +3,12 @@ from pathlib import Path
 import os
 
 import dj_database_url
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-local-development-key")
 DEBUG = os.getenv("DEBUG", "True").lower() in {"1", "true", "yes", "on"}
@@ -62,10 +65,16 @@ TEMPLATES = [
 WSGI_APPLICATION = "todo_project.wsgi.application"
 
 
+_database_url = os.getenv("DATABASE_URL")
+if not _database_url:
+    raise ImproperlyConfigured(
+        "DATABASE_URL environment variable is required. Set it to your Supabase database URL."
+    )
 DATABASES = {
     "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=_database_url,
         conn_max_age=600,
+        ssl_require=True,
     )
 }
 
@@ -94,3 +103,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "tasks:list"
 LOGOUT_REDIRECT_URL = "login"
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 1209600
