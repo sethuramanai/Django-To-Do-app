@@ -1,10 +1,11 @@
 """Django settings for a portfolio-ready to-do app."""
-from pathlib import Path
-from dotenv import load_dotenv
-from django.core.exceptions import ImproperlyConfigured
 import os
 import dj_database_url
 import sys
+from pathlib import Path
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,20 +13,23 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = "n8qdv!702o@m1(7**h_&f&g+3e6y0ubr&r^b$ws(%9sqh7pvmj"
 DEBUG = os.getenv("DEBUG", "True").lower() in {"1", "true", "yes", "on"}
+DATABASE_URL="postgresql://postgres.vuotmtdwejiyskglcrsp:supabasedb90_@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
 
-if 'test' in sys.argv:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
-        }
+# Default = SQLite (used in CI + local tests)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
+}
 
-else: 
-    DATABASE_URL = os.getenv("DATABASE_URL") 
-if not DATABASE_URL:
-    raise ImproperlyConfigured( "DATABASE_URL environment variable is required." )
-DATABASES = { "default": dj_database_url.config( default=DATABASE_URL, conn_max_age=600, ssl_require=True, ) }    
+
+# Override ONLY for production (Railway)
+if os.getenv("DATABASE_URL"):
+    import dj_database_url
+    DATABASES = {
+        "default": dj_database_url.parse("DATABASE_URL")
+    }    
 
 
 ALLOWED_HOSTS = os.getenv(
