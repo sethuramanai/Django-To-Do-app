@@ -1,10 +1,10 @@
 """Django settings for a portfolio-ready to-do app."""
 from pathlib import Path
-import os
-
-import dj_database_url
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
+import os
+import dj_database_url
+import sys
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,6 +12,21 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = "n8qdv!702o@m1(7**h_&f&g+3e6y0ubr&r^b$ws(%9sqh7pvmj"
 DEBUG = os.getenv("DEBUG", "True").lower() in {"1", "true", "yes", "on"}
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+
+else: 
+    DATABASE_URL = os.getenv("DATABASE_URL") 
+if not DATABASE_URL:
+    raise ImproperlyConfigured( "DATABASE_URL environment variable is required." )
+DATABASES = { "default": dj_database_url.config( default=DATABASE_URL, conn_max_age=600, ssl_require=True, ) }    
+
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
@@ -71,18 +86,18 @@ TEMPLATES = [
 WSGI_APPLICATION = "todo_project.wsgi.application"
 
 
-_database_url = os.getenv("DATABASE_URL")
-if not _database_url:
-    raise ImproperlyConfigured(
-        "DATABASE_URL environment variable is required. Set it to your Supabase database URL."
-    )
-DATABASES = {
-    "default": dj_database_url.config(
-        default=_database_url,
-        conn_max_age=600,
-        ssl_require=True,
-    )
-}
+#_database_url = os.getenv("DATABASE_URL")
+#if not _database_url:
+#    raise ImproperlyConfigured(
+#        "DATABASE_URL environment variable is required. Set it to your Supabase database URL."
+#    )
+#DATABASES = {
+#    "default": dj_database_url.config(
+#        default=_database_url,
+#        conn_max_age=600,
+#        ssl_require=True,
+#    )
+#}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -112,3 +127,6 @@ LOGOUT_REDIRECT_URL = "login"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1209600
+
+
+
