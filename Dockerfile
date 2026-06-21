@@ -15,4 +15,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "todo_project.wsgi:application"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "todo_project.wsgi:application"]
+
+CMD sh -c "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn todo_project.wsgi:application --bind 0.0.0.0:${PORT:-8000}"
