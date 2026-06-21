@@ -34,12 +34,12 @@ if os.getenv("DATABASE_URL"):
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,askflow0.up.railway.app"
+    "localhost,127.0.0.1,taskflow0.up.railway.app"
 ).split(",")
 
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS",
-    "https://askflow0.up.railway.app"
+    "https://taskflow0.up.railway.app"
 ).split(",")
 
 
