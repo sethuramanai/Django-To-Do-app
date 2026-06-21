@@ -1,4 +1,4 @@
-# TaskFlow - Django To-Do App
+# TaskFlow - Django To-Do App.
 
 TaskFlow is a polished Django CRUD application built for a portfolio. It helps users create, search, filter, prioritize, update, complete, and delete tasks through a responsive web interface.
 
