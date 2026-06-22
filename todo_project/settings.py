@@ -11,22 +11,18 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = "n8qdv!702o@m1(7**h_&f&g+3e6y0ubr&r^b$ws(%9sqh7pvmj"
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-ewg68q8ny8&)p(d&vc7xmc6&nbcm4go95f%rup3ae%22++m@o-",
+)
+
 DEBUG = os.getenv("DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 
 # Default = SQLite (used in CI + local tests)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-
+# DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3",}
 # Override ONLY for production (Railway)
 
 if os.getenv("DATABASE_URL"):
-    import dj_database_url
     DATABASES = {
                    "default": dj_database_url.parse(
                     os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3"),
