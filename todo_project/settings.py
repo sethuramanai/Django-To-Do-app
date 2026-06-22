@@ -28,9 +28,7 @@ if os.getenv("DATABASE_URL"):
                     os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3"),
                     conn_max_age=600
                      )
-                 }
-
-    }    
+                 } 
 
 
 ALLOWED_HOSTS = os.getenv(
