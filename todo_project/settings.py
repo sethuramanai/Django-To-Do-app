@@ -13,7 +13,6 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = "n8qdv!702o@m1(7**h_&f&g+3e6y0ubr&r^b$ws(%9sqh7pvmj"
 DEBUG = os.getenv("DEBUG", "True").lower() in {"1", "true", "yes", "on"}
-DATABASE_URL="postgresql://postgres.vuotmtdwejiyskglcrsp:supabasedb90_@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
 
 # Default = SQLite (used in CI + local tests)
 DATABASES = {
@@ -25,10 +24,16 @@ DATABASES = {
 
 
 # Override ONLY for production (Railway)
+
 if os.getenv("DATABASE_URL"):
     import dj_database_url
     DATABASES = {
-        "default": dj_database_url.parse("DATABASE_URL")
+                   "default": dj_database_url.parse(
+                    os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3"),
+                    conn_max_age=600
+                     )
+                 }
+
     }    
 
 
